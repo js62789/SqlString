@@ -11,6 +11,12 @@ describe('Statement Compiling', function(){
       assert.equal(sql.toString(), "SELECT `id` FROM `account` WHERE `age` = '3' AND `name` = 'test'");
     });
 
+    it('should not escape a boolean', function(){
+      var sql = new SqlString();
+      sql.select('id').from('account').where({active: true});
+      assert.equal(sql.toString(), "SELECT `id` FROM `account` WHERE `active` = true");
+    });
+
     it('should use an IN when given an array as a criteria value', function(){
       var sql = new SqlString();
       sql.select('id').from('account').where({age: [1,2,3]});

@@ -49,10 +49,14 @@
     return obj instanceof Array;
   };
 
+  var isBoolean = function (obj) {
+    return typeof obj === "boolean";
+  };
+
   var escapeAttributes = function (attrs) {
     if (isArray(attrs)) {
       return attrs.map(escapeAttributes).join(", ");
-    } else if (attrs === '*') {
+    } else if (attrs === "*") {
       return attrs;
     } else {
       return ["`", attrs, "`"].join("");
@@ -101,6 +105,10 @@
             whereFragment += "(";
             whereFragment += escapeValues(value);
             whereFragment += ")";
+          } else if (isBoolean(value)) {
+            whereFragment += "=";
+            whereFragment += " ";
+            whereFragment += value;
           } else {
             whereFragment += "=";
             whereFragment += " ";
