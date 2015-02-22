@@ -9,7 +9,6 @@
     this._fragment = {
       select: [],
       update: [],
-      delete: [],
       from: [],
       into: [],
       set: [],
@@ -26,7 +25,7 @@
     this.SqlString = SqlString;
   }
 
-  var QueryTypes = {
+  var QueryTypes = SqlString.QueryTypes = {
     SELECT: 1,
     INSERT: 2,
     UPDATE: 3,
@@ -243,6 +242,8 @@
       case QueryTypes.DELETE:
         isValid = this._fragment.from.length && this._fragment.where.length;
         break;
+      default:
+        isValid = false;
     }
     return isValid;
   };
@@ -262,7 +263,7 @@
       sql += "FROM";
       sql += " ";
       sql += escapeAttributes(fragment.from);
-      if (fragment.where) {
+      if (fragment.where.length) {
         sql += " ";
         sql += buildWhereFragment(fragment.where);
       }
@@ -280,7 +281,7 @@
       sql += escapeAttributes(fragment.update);
       sql += " ";
       sql += buildSetFragment(fragment.set);
-      if (fragment.where) {
+      if (fragment.where.length) {
         sql += " ";
         sql += buildWhereFragment(fragment.where);
       }

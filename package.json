@@ -4,7 +4,7 @@
   "description": "A JavaScript utility used to build SQL strings via chainable methods",
   "main": "sqlstring.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/js62789/SqlString/issues"
   },
-  "homepage": "https://github.com/js62789/SqlString"
+  "homepage": "https://github.com/js62789/SqlString",
+  "devDependencies": {
+    "mocha": "~2.1.0"
+  }
 }
