@@ -1,0 +1,28 @@
+{
+  "name": "SqlString",
+  "version": "0.0.1",
+  "description": "A JavaScript utility used to build SQL strings via chainable methods",
+  "main": "sqlstring.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/js62789/SqlString.git"
+  },
+  "keywords": [
+    "sql",
+    "string",
+    "node",
+    "js",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Jeffrey Smith <js62789@gmail.com>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/js62789/SqlString/issues"
+  },
+  "homepage": "https://github.com/js62789/SqlString"
+}
