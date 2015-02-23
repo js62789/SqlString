@@ -277,60 +277,43 @@
     }
 
     var fragment = this._fragment;
-    var sql = "";
+    var sql = [];
     if (this.type === QueryTypes.SELECT) {
-      sql += "SELECT";
-      sql += " ";
-      sql += escapeAttributes(fragment.select);
-      sql += " ";
-      sql += "FROM";
-      sql += " ";
-      sql += escapeAttributes(fragment.from);
+      sql.push("SELECT");
+      sql.push(escapeAttributes(fragment.select));
+      sql.push("FROM");
+      sql.push(escapeAttributes(fragment.from));
       if (fragment.where.length) {
-        sql += " ";
-        sql += buildWhereFragment(fragment.where);
+        sql.push(buildWhereFragment(fragment.where));
       }
       if (fragment.limit) {
-        sql += " ";
-        sql += "LIMIT";
-        sql += " ";
-        sql += fragment.limit;
+        sql.push("LIMIT");
+        sql.push(fragment.limit);
         if (fragment.offset) {
-          sql += " ";
-          sql += "OFFSET";
-          sql += " ";
-          sql += fragment.offset
+          sql.push("OFFSET");
+          sql.push(fragment.offset);
         }
       }
     } else if (this.type === QueryTypes.INSERT) {
-      sql += "INSERT";
-      sql += " ";
-      sql += "INTO";
-      sql += " ";
-      sql += escapeAttributes(fragment.into);
-      sql += " ";
-      sql += buildSetFragment(fragment.set);
+      sql.push("INSERT");
+      sql.push("INTO");
+      sql.push(escapeAttributes(fragment.into));
+      sql.push(buildSetFragment(fragment.set));
     } else if (this.type === QueryTypes.UPDATE) {
-      sql += "UPDATE";
-      sql += " ";
-      sql += escapeAttributes(fragment.update);
-      sql += " ";
-      sql += buildSetFragment(fragment.set);
+      sql.push("UPDATE");
+      sql.push(escapeAttributes(fragment.update));
+      sql.push(buildSetFragment(fragment.set));
       if (fragment.where.length) {
-        sql += " ";
-        sql += buildWhereFragment(fragment.where);
+        sql.push(buildWhereFragment(fragment.where));
       }
     } else if (this.type === QueryTypes.DELETE) {
-      sql += "DELETE";
-      sql += " ";
-      sql += "FROM";
-      sql += " ";
-      sql += escapeAttributes(fragment.from);
-      sql += " ";
-      sql += buildWhereFragment(fragment.where);
+      sql.push("DELETE");
+      sql.push("FROM");
+      sql.push(escapeAttributes(fragment.from));
+      sql.push(buildWhereFragment(fragment.where));
     }
 
-    return sql;
+    return sql.join(" ");
   };
 
 }).call(this);
