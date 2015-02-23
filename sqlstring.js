@@ -12,7 +12,9 @@
       from: [],
       into: [],
       set: [],
-      where: []
+      where: [],
+      limit: null,
+      offset: null
     };
   };
 
@@ -235,6 +237,19 @@
     return this;
   };
 
+  SqlString.prototype.limit = function (limit, offset) {
+    this._fragment.limit = limit;
+    if (offset) {
+      this._fragment.offset = offset;
+    }
+    return this;
+  };
+
+  SqlString.prototype.offset = function (offset) {
+    this._fragment.offset = offset;
+    return this;
+  };
+
   SqlString.prototype.validate = function () {
     var isValid = false;
     switch (this.type) {
@@ -274,6 +289,18 @@
       if (fragment.where.length) {
         sql += " ";
         sql += buildWhereFragment(fragment.where);
+      }
+      if (fragment.limit) {
+        sql += " ";
+        sql += "LIMIT";
+        sql += " ";
+        sql += fragment.limit;
+        if (fragment.offset) {
+          sql += " ";
+          sql += "OFFSET";
+          sql += " ";
+          sql += fragment.offset
+        }
       }
     } else if (this.type === QueryTypes.INSERT) {
       sql += "INSERT";

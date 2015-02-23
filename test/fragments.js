@@ -167,4 +167,43 @@ describe('Fragments', function(){
 
   });
 
+  describe('#limit()', function(){
+
+    it('should be chainable', function(){
+      var sql = new SqlString();
+      var returned = sql.limit(10);
+      assert.equal(true, returned instanceof SqlString);
+    });
+
+    it('should set the limit', function(){
+      var sql = new SqlString();
+      sql.limit(10);
+      assert.equal(10, sql._fragment.limit);
+    });
+
+    it('should set the limit and offset', function(){
+      var sql = new SqlString();
+      sql.limit(10, 20);
+      assert.equal(10, sql._fragment.limit);
+      assert.equal(20, sql._fragment.offset);
+    });
+
+  });
+
+  describe('#offset()', function(){
+
+    it('should be chainable', function(){
+      var sql = new SqlString();
+      var returned = sql.offset(10);
+      assert.equal(true, returned instanceof SqlString);
+    });
+
+    it('should set the offset', function(){
+      var sql = new SqlString();
+      sql.offset(10);
+      assert.equal(10, sql._fragment.offset);
+    });
+
+  });
+
 });
