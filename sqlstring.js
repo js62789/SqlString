@@ -44,6 +44,18 @@
     return obj;
   };
 
+  var map = function (obj, iterator) {
+    if (isArray(obj)) {
+      return obj.map(iterator);
+    } else {
+      var results = [];
+      for (var prop in obj) {
+        results.push(iterator(obj[prop], prop));
+      }
+      return results;
+    }
+  };
+
   var isString = function (obj) {
     return typeof obj === "string";
   };
@@ -84,65 +96,42 @@
   };
 
   var buildWhereCriteria = function (requirements, operator) {
-    var whereFragments = [];
-    requirements.forEach(function(requirement){
-      for (var attr in requirement) {
-        var value = requirement[attr];
+    return map(requirements, function (requirement) {
+      return map(requirement, function (value, attr) {
         if (attr === 'or') {
           if (!isArray(value)) {
             throw new Error('Or operator requires an array of options');
           }
-          var whereFragment = "(" + buildWhereCriteria(value, 'OR') + ")";
-          whereFragments.push(whereFragment);
+          return "(" + buildWhereCriteria(value, 'OR') + ")";
         } else {
-          var whereFragment = "";
-          whereFragment += escapeAttributes(attr);
-          whereFragment += " ";
+          var whereFragment = [escapeAttributes(attr)];
           if (value instanceof SqlString) {
-            whereFragment += "IN";
-            whereFragment += " ";
-            whereFragment += "(";
-            whereFragment += value;
-            whereFragment += ")";
+            whereFragment.push("IN");
+            whereFragment.push("(" + value + ")");
           } else if (isArray(value)) {
-            whereFragment += "IN";
-            whereFragment += " ";
-            whereFragment += "(";
-            whereFragment += escapeValues(value);
-            whereFragment += ")";
+            whereFragment.push("IN");
+            whereFragment.push("(" + escapeValues(value) + ")");
           } else if (isBoolean(value)) {
-            whereFragment += "=";
-            whereFragment += " ";
-            whereFragment += value;
+            whereFragment.push("=");
+            whereFragment.push(value);
           } else {
-            whereFragment += "=";
-            whereFragment += " ";
-            whereFragment += escapeValues(value);
+            whereFragment.push("=");
+            whereFragment.push(escapeValues(value));
           }
-          whereFragments.push(whereFragment);
+          return whereFragment.join(" ");
         }
-      }
-    });
-    return whereFragments.join(" " + operator + " ");
+      });
+    }).join(" " + operator + " ");
   };
 
   var buildSetFragment = function (requirements) {
     var sql = "SET";
     sql += " ";
-    var setFragments = [];
-    requirements.forEach(function(requirement){
-      for (var attr in requirement) {
-        var value = requirement[attr];
-        var setFragment = "";
-        setFragment += escapeAttributes(attr);
-        setFragment += " ";
-        setFragment += "=";
-        setFragment += " ";
-        setFragment += escapeValues(value);
-        setFragments.push(setFragment);
-      }
-    });
-    sql += setFragments.join(", ");
+    sql += map(requirements, function(requirement) {
+      return map(requirement, function(value, attr) {
+        return [escapeAttributes(attr), "=", escapeValues(value)].join(" ");
+      });
+    }).join(", ");
     return sql;
   };
 
@@ -221,22 +210,38 @@
   };
 
   SqlString.prototype.set = function (requirements) {
+    var ss = this;
     var setCriteria = this._fragment.set;
-    for (var attr in requirements) {
-      var requirement = {};
-      requirement[attr] = requirements[attr];
-      setCriteria.push(requirement);
-    }
+    var args = Array.prototype.slice.call(arguments, 0);
+    args.forEach(function(requirements){
+      if (isArray(requirements)) {
+        ss.set.apply(ss, requirements);
+      } else {
+        for (var attr in requirements) {
+          var requirement = {};
+          requirement[attr] = requirements[attr];
+          setCriteria.push(requirement);
+        }
+      }
+    });
     return this;
   };
 
   SqlString.prototype.where = function (requirements) {
+    var ss = this;
     var whereCriteria = this._fragment.where;
-    for (var attr in requirements) {
-      var requirement = {};
-      requirement[attr] = requirements[attr];
-      whereCriteria.push(requirement);
-    }
+    var args = Array.prototype.slice.call(arguments, 0);
+    args.forEach(function(requirements){
+      if (isArray(requirements)) {
+        ss.where.apply(ss, requirements);
+      } else {
+        for (var attr in requirements) {
+          var requirement = {};
+          requirement[attr] = requirements[attr];
+          whereCriteria.push(requirement);
+        }
+      }
+    });
     return this;
   };
 

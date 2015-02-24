@@ -3,6 +3,28 @@ var SqlString = require('../sqlstring');
 
 describe('Statement Compiling', function(){
 
+  describe('#set()', function(){
+
+    it('should accept an object', function(){
+      var sql = new SqlString();
+      sql.update('account').set({email: 'test@test.com'});
+      assert.equal(sql.toString(), "UPDATE `account` SET `email` = 'test@test.com'");
+    });
+
+    it('should accept multiple criteria', function(){
+      var sql = new SqlString();
+      sql.update('account').set({email: 'test@test.com', age: 3});
+      assert.equal(sql.toString(), "UPDATE `account` SET `email` = 'test@test.com', `age` = '3'");
+    });
+
+    it('should accept multiple objects as arguments', function(){
+      var sql = new SqlString();
+      sql.update('account').set({email: 'test@test.com', age: 3}, {name: 'test'});
+      assert.equal(sql.toString(), "UPDATE `account` SET `email` = 'test@test.com', `age` = '3', `name` = 'test'");
+    });
+
+  });
+
   describe('#where()', function(){
 
     it('should use an AND operator when given an object', function(){
