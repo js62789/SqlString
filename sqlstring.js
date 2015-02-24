@@ -60,6 +60,8 @@
       return attrs.map(escapeAttributes).join(", ");
     } else if (attrs === "*") {
       return attrs;
+    } else if (attrs.indexOf('.') !== -1) {
+      return attrs.split(".").map(escapeAttributes).join(".");
     } else {
       return ["`", attrs, "`"].join("");
     }

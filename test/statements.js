@@ -51,4 +51,14 @@ describe('Statement Compiling', function(){
 
   });
 
+  describe('#select()', function(){
+
+    it('should escape namespaced fields', function(){
+      var sql = new SqlString();
+      sql.select('account.id').from('account');
+      assert.equal(sql.toString(), 'SELECT `account`.`id` FROM `account`');
+    });
+
+  });
+
 });
