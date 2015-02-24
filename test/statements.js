@@ -61,4 +61,20 @@ describe('Statement Compiling', function(){
 
   });
 
+  describe('#orderBy()', function () {
+
+    it('should accept a field', function(){
+      var sql = new SqlString();
+      sql.select('id').from('account').orderBy('id');
+      assert.equal(sql.toString(), 'SELECT `id` FROM `account` ORDER BY `id` ASC');
+    });
+
+    it('should accept a field and order', function(){
+      var sql = new SqlString();
+      sql.select('id').from('account').orderBy('id', 'desc');
+      assert.equal(sql.toString(), 'SELECT `id` FROM `account` ORDER BY `id` DESC');
+    });
+
+  });
+
 });

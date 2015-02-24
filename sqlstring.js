@@ -13,6 +13,7 @@
       into: [],
       set: [],
       where: [],
+      orderBy: [],
       limit: null,
       offset: null
     };
@@ -252,6 +253,14 @@
     return this;
   };
 
+  SqlString.prototype.orderBy = function (field, order) {
+    this._fragment.orderBy.push({
+      field: field,
+      order: order || 'asc'
+    });
+    return this;
+  };
+
   SqlString.prototype.validate = function () {
     var isValid = false;
     switch (this.type) {
@@ -287,6 +296,12 @@
       sql.push(escapeAttributes(fragment.from));
       if (fragment.where.length) {
         sql.push(buildWhereFragment(fragment.where));
+      }
+      if (fragment.orderBy.length) {
+        sql.push("ORDER BY");
+        sql.push(fragment.orderBy.map(function(orderBy){
+          return [escapeAttributes(orderBy.field), orderBy.order.toUpperCase()].join(" ");
+        }).join(", "));
       }
       if (fragment.limit) {
         sql.push("LIMIT");

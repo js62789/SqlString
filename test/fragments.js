@@ -206,4 +206,20 @@ describe('Fragments', function(){
 
   });
 
+  describe('#orderBy()', function(){
+
+    it('should be chainable', function(){
+      var sql = new SqlString();
+      var returned = sql.orderBy('id');
+      assert.equal(true, returned instanceof SqlString);
+    });
+
+    it('should set the orderBy', function(){
+      var sql = new SqlString();
+      sql.orderBy('id');
+      assert.equal(1, sql._fragment.orderBy.length);
+    });
+
+  });
+
 });
