@@ -83,6 +83,10 @@
   var escapeValues = function (values) {
     if (isArray(values)) {
       return values.map(escapeValues).join(", ");
+    } else if (values.method) {
+      return values.method + ["(", escapeValues(values.param), ")"].join("");
+    } else if (isBoolean(values)) {
+      return values;
     } else {
       return ["'", values, "'"].join("");
     }
@@ -105,15 +109,15 @@
           return "(" + buildWhereCriteria(value, 'OR') + ")";
         } else {
           var whereFragment = [escapeAttributes(attr)];
-          if (value instanceof SqlString) {
+          if (value.value) {
+            whereFragment.push(value.operator ? value.operator.toUpperCase() : "=");
+            whereFragment.push(escapeValues(value.value));
+          } else if (value instanceof SqlString) {
             whereFragment.push("IN");
             whereFragment.push("(" + value + ")");
           } else if (isArray(value)) {
             whereFragment.push("IN");
             whereFragment.push("(" + escapeValues(value) + ")");
-          } else if (isBoolean(value)) {
-            whereFragment.push("=");
-            whereFragment.push(value);
           } else {
             whereFragment.push("=");
             whereFragment.push(escapeValues(value));

@@ -23,6 +23,12 @@ describe('Statement Compiling', function(){
       assert.equal(sql.toString(), "UPDATE `account` SET `email` = 'test@test.com', `age` = '3', `name` = 'test'");
     });
 
+    it('should accept methods and parameters', function(){
+      var sql = new SqlString();
+      sql.update('account').set({email: 'test@test.com', password: {method: 'MD5', param: 'password'}}, {name: 'test'});
+      assert.equal(sql.toString(), "UPDATE `account` SET `email` = 'test@test.com', `password` = MD5('password'), `name` = 'test'");
+    });
+
   });
 
   describe('#where()', function(){
@@ -61,6 +67,12 @@ describe('Statement Compiling', function(){
       var sql = new SqlString();
       sql.select('id').from('account').where({age: 3, or: [{id: 1}, {name: 'test'}]});
       assert.equal(sql.toString(), "SELECT `id` FROM `account` WHERE `age` = '3' AND (`id` = '1' OR `name` = 'test')");
+    });
+
+    it('should use a LIKE operator when passed a like property', function(){
+      var sql = new SqlString();
+      sql.select('id').from('account').where({first_name: {operator: 'like', value: 'John'}});
+      assert.equal(sql.toString(), "SELECT `id` FROM `account` WHERE `first_name` LIKE 'John'");
     });
 
     it('should accept a SqlString as a criteria value', function(){
