@@ -68,6 +68,14 @@
     return typeof obj === "boolean";
   };
 
+  var isUndefined = function (obj) {
+    return typeof obj === "undefined";
+  };
+
+  var isNull = function (obj) {
+    return obj === null;
+  };
+
   var escapeAttributes = function (attrs) {
     if (isArray(attrs)) {
       return attrs.map(escapeAttributes).join(", ");
@@ -81,7 +89,9 @@
   };
 
   var escapeValues = function (values) {
-    if (isArray(values)) {
+    if (isNull(values)) {
+      return "NULL";
+    } else if (isArray(values)) {
       return values.map(escapeValues).join(", ");
     } else if (values.method) {
       return values.method + ["(", escapeValues(values.param), ")"].join("");
@@ -107,6 +117,8 @@
             throw new Error('Or operator requires an array of options');
           }
           return "(" + buildWhereCriteria(value, 'OR') + ")";
+        } else if (isUndefined(value)) {
+          throw new Error('Where criteria for ' + attr + ' is undefined');
         } else {
           var whereFragment = [escapeAttributes(attr)];
           if (value.value) {
