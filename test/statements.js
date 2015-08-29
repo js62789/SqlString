@@ -95,6 +95,22 @@ describe('Statement Compiling', function(){
 
   });
 
+  describe('#insert()', function(){
+
+    it('should accept an object', function(){
+      var sql = new SqlString();
+      sql.insert({name: 'test', age: 4}).into('account');
+      assert.equal(sql.toString(), "INSERT INTO `account` SET `name` = 'test', `age` = '4'");
+    });
+
+    it('should accept an array', function(){
+      var sql = new SqlString();
+      sql.insert([{name: 'test', age: 4}, {name: 'test2', age: 5}]).into('account');
+      assert.equal(sql.toString(), "INSERT INTO `account` (`name`, `age`) VALUES ('test', '4'), ('test2', '5')");
+    });
+
+  });
+
   describe('#orderBy()', function () {
 
     it('should accept a field', function(){

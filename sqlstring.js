@@ -140,13 +140,26 @@
     }).join(" " + operator + " ");
   };
 
+  var buildInsertFragment = function (requirements) {
+    if (requirements.length > 1) {
+      var keys = Object.keys(requirements[0]);
+      var escapedKeys = keys.map(escapeAttributes).join(', ');
+      var values = requirements.map(function(requirement){
+        return map(requirement, escapeValues).join(', ');
+      });
+      return '(' + escapedKeys + ') VALUES (' + values.join('), (') + ')';
+    } else {
+      return buildSetFragment(requirements);
+    }
+  };
+
   var buildSetFragment = function (requirements) {
     var sql = "SET";
     sql += " ";
     sql += map(requirements, function(requirement) {
       return map(requirement, function(value, attr) {
         return [escapeAttributes(attr), "=", escapeValues(value)].join(" ");
-      });
+      }).join(', ');
     }).join(", ");
     return sql;
   };
@@ -168,11 +181,10 @@
 
   SqlString.prototype.insert = function (requirements) {
     this.type = QueryTypes.INSERT;
-    var setCriteria = this._fragment.set;
-    for (var attr in requirements) {
-      var requirement = {};
-      requirement[attr] = requirements[attr];
-      setCriteria.push(requirement);
+    if (isArray(requirements)) {
+      this._fragment.set = this._fragment.set.concat(requirements);
+    } else if (requirements) {
+      this._fragment.set.push(requirements);
     }
     return this;
   };
@@ -336,7 +348,7 @@
       sql.push("INSERT");
       sql.push("INTO");
       sql.push(escapeAttributes(fragment.into));
-      sql.push(buildSetFragment(fragment.set));
+      sql.push(buildInsertFragment(fragment.set));
     } else if (this.type === QueryTypes.UPDATE) {
       sql.push("UPDATE");
       sql.push(escapeAttributes(fragment.update));

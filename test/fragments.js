@@ -48,6 +48,12 @@ describe('Fragments', function(){
     it('should accept a map of fields and values', function(){
       var sql = new SqlString();
       sql.insert({name: 'test', age: 3});
+      assert.equal(1, sql._fragment.set.length);
+    });
+
+    it('should accept an array', function(){
+      var sql = new SqlString();
+      sql.insert([{name: 'test', age: 3}, {name: 'test2', age: 4}]);
       assert.equal(2, sql._fragment.set.length);
     });
 
